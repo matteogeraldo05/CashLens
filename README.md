@@ -33,7 +33,7 @@ CashLens is a full-stack web application that gives users a single place to unde
 | Build tool | Vite |
 | Routing | Vue Router 4 |
 | State management | Pinia |
-| Styling | Tailwind CSS + scoped SFC CSS |
+| Styling | Bulma + scoped SFC CSS |
 | Charts | D3.js (raw SVG) |
 | HTTP client | Axios |
 | Backend | Node.js + Express.js |
