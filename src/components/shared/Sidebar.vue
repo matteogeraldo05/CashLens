@@ -41,13 +41,13 @@ const accountStore = useAccountStore()
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/budgets" active-class="is-active">
+					<router-link to="/subscriptions" active-class="is-active">
 						<PhCreditCard class="nav-icon" />
 						Subscriptions
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/budgets" active-class="is-active">
+					<router-link to="/analytics" active-class="is-active">
 						<PhChartLine class="nav-icon" />
 						Analytics
 					</router-link>
