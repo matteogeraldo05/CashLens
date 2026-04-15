@@ -3,6 +3,8 @@ Alexis Ryan - Why is it that the bulma columns css alignement breaks when going 
 Alexis Ryan - when i log in there is a short period of time where the Sidebar.vue shows up before the app main transfers to the dashboard how do i make it so the sidebar only shows up when its appropriated (after login screen no longer there)\
 Alexis Ryan - Help me add edge case protection in the budget modal and page to avoid invalid inputs or saves to the budgets
 Alexis Ryan - Why is it that on inital load the transactions calculations arent fetched in time and how can I fix this
+Alexis Ryan - Add comments above sections of budgetmodal and budgetspage explaining functionality
+Alexis Ryan - Analyze current project structure and add to the readme where each objective evaluation is used
 
 Matteo De Angelis Geraldo: used GitHub Copilot autocomplete when building components
 Matteo De Angelis Geraldo: Can you help me structure TransactionModal.vue and TransactionsPage.vue, including form handling, validation logic, and modal state management?
