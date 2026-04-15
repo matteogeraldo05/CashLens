@@ -112,3 +112,130 @@ export const useAccountStore = defineStore('account', {
 		},
 	},
 });
+
+/*
+	Transactions store: fetches, adds, and deletes transactions for the logged-in user.
+	All Supabase calls live here — components only call store actions.
+*/
+export const useTransactionStore = defineStore('transactions', {
+	state: () => ({
+		transactions: [],
+		loading: false,
+		error: null,
+		currentPage: 1,
+		pageSize: 6,
+	}),
+
+	getters: {
+		totalCount: (state) => state.transactions.length,
+
+		paginatedTransactions: (state) => {
+			const start = (state.currentPage - 1) * state.pageSize;
+			return state.transactions.slice(start, start + state.pageSize);
+		},
+
+		totalPages: (state) => Math.ceil(state.transactions.length / state.pageSize),
+	},
+
+	actions: {
+		async fetchTransactions() {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return;
+
+			this.loading = true;
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('transactions')
+				.select('*')
+				.eq('user_id', uid)
+				.order('date', { ascending: false });
+
+			this.loading = false;
+
+			if (error) {
+				this.error = error.message;
+			} else {
+				this.transactions = data ?? [];
+			}
+		},
+
+		async addTransaction(payload) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('transactions')
+				.insert({ ...payload, user_id: uid })
+				.select()
+				.single();
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			this.transactions.unshift(data);
+			return { data };
+		},
+
+		async updateTransaction(id, payload) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('transactions')
+				.update(payload)
+				.eq('id', id)
+				.eq('user_id', uid)
+				.select()
+				.single();
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			const idx = this.transactions.findIndex((t) => t.id === id);
+			if (idx !== -1) this.transactions[idx] = data;
+			return { data };
+		},
+
+		async deleteTransaction(id) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { error } = await supabase
+				.from('transactions')
+				.delete()
+				.eq('id', id)
+				.eq('user_id', uid);
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			this.transactions = this.transactions.filter((t) => t.id !== id);
+			return {};
+		},
+
+		setPage(n) {
+			this.currentPage = n;
+		},
+
+		resetError() {
+			this.error = null;
+		},
+	},
+});
