@@ -1,3 +1,4 @@
+<!-- Modal component for creating and editing budgets -->
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { PhForkKnife, PhTag, PhWarning } from '@phosphor-icons/vue'

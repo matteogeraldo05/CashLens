@@ -1,4 +1,4 @@
-<!-- budgets page to be implemented by alexis pili -->
+<!-- Budgets page: displays all budgets with progress tracking and management options -->
 <script setup>
 import { ref, onMounted } from 'vue'
 import { PhPlus, PhPencil } from '@phosphor-icons/vue'
@@ -6,10 +6,12 @@ import { useTransactionStore } from '../../lib/stores'
 import BudgetModal from './BudgetModal.vue'
  
 const store = useTransactionStore()
- 
+
+// Modal state: controls visibility and which budget is being edited
 const showModal = ref(false)
 const selectedBudget = ref(null)
- 
+
+// Lifecycle: fetch all budgets and transactions on component mount
 onMounted(async () => {
 	await Promise.all([
 		store.fetchBudgets(),
@@ -17,24 +19,25 @@ onMounted(async () => {
 	])
 })
  
+// Opens modal for creating a new budget
 function openNewBudgetModal() {
 	selectedBudget.value = null
 	showModal.value = true
 }
- 
+
+// Opens modal for editing an existing budget
 function openEditBudgetModal(budget) {
 	selectedBudget.value = budget
 	showModal.value = true
 }
- 
+
+// Closes modal and clears selected budget
 function onModalClose() {
 	showModal.value = false
 	selectedBudget.value = null
 }
- 
 
- 
-// Calculate progress and spend info for a budget
+// Calculates budget statistics: spending, remaining balance, progress percentage, and over-budget status
 function getBudgetStats(budget, transactions) {
 	// income transactions for this category
 	const incomeTransactions = transactions.filter(
@@ -65,7 +68,7 @@ function getBudgetStats(budget, transactions) {
 	}
 }
  
-// Get icon emoji for category
+// Returns emoji icon for each budget category
 function getCategoryIcon(category) {
 	const icons = {
 		'Income': '💰',
@@ -80,7 +83,7 @@ function getCategoryIcon(category) {
 	return icons[category]
 }
  
-// Format currency
+// Formats numbers as USD currency strings
 function formatCurrency(amount) {
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
@@ -89,9 +92,10 @@ function formatCurrency(amount) {
 }
 </script>
  
+<!-- Page template: displays header, loading/error states, and budget cards -->
 <template>
 	<div class="container is-max-desktop p-4">
-		<!-- header -->
+		<!-- Page header: title, subtitle, and new budget button -->
 		<div class="level mb-6">
 			<div class="level-left">
 				<div class="level-item">
@@ -111,28 +115,28 @@ function formatCurrency(amount) {
 			</div>
 		</div>
 
-		<!-- if loading have a spinner -->
+		<!-- Loading state: spinner displayed while fetching data -->
 		<div v-if="store.loading" class="has-text-centered py-6">
 			<div class="spinner mb-4"></div>
 			<p>Loading budgets...</p>
 		</div>
 
-		<!-- if error in the store render it -->
+		<!-- Error state: displays any errors from store fetch operations -->
 		<div v-else-if="store.error" class="notification is-danger">
 			{{ store.error }}
 		</div>
 
-		<!-- if emptty -->
+		<!-- Empty state: shown when user has no budgets yet -->
 		<div v-else-if="store.budgets.length === 0" class="has-text-centered py-6">
 			<h2 class="title is-4">No budgets yet</h2>
 			<p class="mb-5">Create your first budget to start tracking your spending</p>
 		</div>
 
-		<!-- normal case/ non empty goes over all budgets in store and makes cards -->
+		<!-- Budget grid: displays all budgets as cards with progress and spending info -->
 		<div v-else class="columns is-multiline">
 			<div v-for="budget in store.budgets" :key="budget.id" class="column is-one-third-desktop is-half-tablet">
 				<div class="box">
-					<!-- Card Header -->
+					<!-- Card header: budget icon, name, category, and edit button -->
 					<div class="is-flex is-justify-content-space-between is-align-items-start mb-4">
 						<div class="is-flex is-align-items-center" style="gap: 12px; flex: 1; min-width: 0;">
 							<div class="is-size-5">{{ getCategoryIcon(budget.category) }}</div>
@@ -150,6 +154,7 @@ function formatCurrency(amount) {
 					</button>
 				</div>
 
+				<!-- Spending summary: current spend vs. allocation -->
 				<div class="mb-4">
 					<p class="heading is-6">
 						{{ formatCurrency(getBudgetStats(budget, store.transactions).currentSpend) }}
@@ -159,7 +164,7 @@ function formatCurrency(amount) {
 					<p class="is-size-7 has-text-grey">Spent</p>
 				</div>
 
-				<!-- progress Bar -->
+					<!-- Progress bar: visual representation of budget utilization with remaining/overage info -->
 				<div class="mb-4">
 					<progress
 						class="progress"
@@ -187,7 +192,7 @@ function formatCurrency(amount) {
 			</div>
 		</div>
 
-		<!-- Budget Modal -->
+		<!-- Budget creation/edit modal: mounted conditionally when showModal is true -->
 		<BudgetModal
 			v-if="showModal"
 			:budget="selectedBudget"
