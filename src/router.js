@@ -6,10 +6,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAccountStore } from './lib/stores';
 import LoginPage from './components/LoginPage.vue';
 import DashboardPage from './components/DashboardPage.vue';
+import AnalyticsPage from './components/AnalyticsPage.vue';
 
 const routes = [
   { path: '/', component: LoginPage },
   { path: '/dashboard', component: DashboardPage, meta: { requiresAuth: true } },
+  { path: '/analytics', component: AnalyticsPage, meta: { requiresAuth: true } },
 ];
 
 const router = createRouter({
