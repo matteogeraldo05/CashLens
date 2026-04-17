@@ -1,0 +1,50 @@
+Thomas Petkovic : Added AnalyticsPage.vue -
+
+Added analyitcs:
+- Allows users to display their expense/income as a graph or as a table 
+- Compares The budget with the Actual spending, allowing the users to view if they're following their budget properly
+- Generates future projections based on historical data
+
+
+Thaddeus Baturensky : 
+
+Added SettingsPage.vue: 
+- Allows users to modify current account variables like account name, account gmail, account password. 
+- Allows the user to delete their account.
+- Allows users to swap between the different currencies and gives a preview.
+
+Added Contributions.txt
+
+
+Matteo De-Angelis Geraldo :
+
+Added transactions:
+- Allows users to add/remove transactions, each transaction is recorded as an income or expense.
+- Records every transaction and updates database accordingly.
+- Allows users to search for specific transactions using keywords, or just sort by using category/date search.
+
+Added Sidebar:
+- Allows user to navigate the website by having a sidebar on the left side of the screen
+- Has a burger icon for smaller devices
+
+
+Alexis Ryan :
+
+Setup database:
+- Stores all key information
+
+Added LoginPage.vue:
+- Allows users to login to the website, must have an account.
+- If no account exists, then users are allowed to create their own account easily.
+
+Added budgets:
+- Allows users to create their own budgets
+- Each budget tracks the users transactions and updates the user on how much money they have left to spend on that specific category.
+
+
+Zain Syed :
+
+Added subscriptions:
+- Allows users to keep track of subscriptions.
+- Active subscriptions are tracked at the top right, telling the users how many current active subscriptions they have.
+- Monthly and yearly costs are calculated and tracked at the top aswell.
