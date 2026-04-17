@@ -19,7 +19,7 @@ const props = defineProps({
 
 <div class="card">
     <header class="card-header">
-        <p class="card-header-title">{{ widget.title }}</p>
+        <p class="card-header-title"> Total Balance </p>
         <button class="card-header-icon" aria-label="more options">
             <span class="icon">
                 <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -29,13 +29,9 @@ const props = defineProps({
 
     <div class="card-content">
         <div class="content">
-            {{ widget.body }}
+            $67.67
         </div>
     </div>
-
-    <footer class="card-footer">
-        <a href="#" class="card-footer-item">{{ widget.footer }}</a>
-    </footer>
 </div>
 
 
