@@ -38,6 +38,20 @@ const props = defineProps({
     </footer>
 </div>
 
+
+
+
 </template>
+<style scoped>
+
+.card
+{
+    background : rgba(255, 255, 255, 0);
+
+	border-bottom: 1px solid rgba(20, 6, 6, 0);
+	/* transition: background 0.12s; */
+}
 
 
+
+</style>
