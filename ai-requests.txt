@@ -12,4 +12,5 @@ Matteo De Angelis Geraldo: I’m having issues with filtering, sorting, and reac
 Matteo De Angelis Geraldo: Can you help me improve my CSS styling, including layout, spacing, color palette, and overall visual consistency?
 Matteo De Angelis Geraldo: Can you suggest utility functions and help me handle edge cases for user input in my application?
 
-Zain Syed - can you help me fix my subscription widget, the third one is wider than the first two
+Thaddeus Baturensky: Can you help me structure SettingsPage.vue?
+Thaddeus Baturensky: Can you comment my code, ensure each part of the code is properly commented and explained
