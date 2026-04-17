@@ -184,7 +184,7 @@ function discardChanges() {
       >Discard</button>
 
       <button
-        class="button is-primary"
+        class="button is-active"
         @click="saveSettings"
         :disabled="!hasChanges"
       >Save Changes</button>
@@ -197,5 +197,10 @@ function discardChanges() {
 <style scoped>
 .settings {
   max-width: 700px;
+}
+
+.is-active {
+  background-color: #84da8a; /* Tailwind's green-400 */
+  color: white;
 }
 </style>
