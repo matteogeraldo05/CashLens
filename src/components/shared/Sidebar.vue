@@ -1,12 +1,27 @@
 <script setup>
+import { inject } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAccountStore } from '../../lib/stores'
 import { PhWallet, PhSquaresFour, PhReceipt, PhChartLine, PhCreditCard, PhGearSix, PhUser } from '@phosphor-icons/vue'
 
+defineProps({
+	isOpen: {
+		type: Boolean,
+		default: false,
+	},
+})
+
 const accountStore = useAccountStore()
+const sidebar = inject('sidebar')
+const route = useRoute()
+
+function handleNavClick() {
+	sidebar?.close()
+}
 </script>
 
 <template>
-	<aside class="sidebar menu">
+	<aside class="sidebar menu" :class="{ 'is-open': isOpen }">
 
 		<!-- Logo -->
 		<div class="sidebar-logo">
@@ -23,37 +38,37 @@ const accountStore = useAccountStore()
 		<nav class="sidebar-nav">
 			<ul class="menu-list">
 				<li>
-					<router-link to="/dashboard" active-class="is-active">
+					<router-link to="/dashboard" active-class="is-active" @click="handleNavClick">
 						<PhSquaresFour class="nav-icon" />
 						Dashboard
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/transactions" active-class="is-active">
+					<router-link to="/transactions" active-class="is-active" @click="handleNavClick">
 						<PhReceipt class="nav-icon" />
 						Transactions
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/budgets" active-class="is-active">
+					<router-link to="/budgets" active-class="is-active" @click="handleNavClick">
 						<PhWallet class="nav-icon" />
 						Budgets
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/subscriptions" active-class="is-active">
+					<router-link to="/subscriptions" active-class="is-active" @click="handleNavClick">
 						<PhCreditCard class="nav-icon" />
 						Subscriptions
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/analytics" active-class="is-active">
+					<router-link to="/analytics" active-class="is-active" @click="handleNavClick">
 						<PhChartLine class="nav-icon" />
 						Analytics
 					</router-link>
 				</li>
 				<li>
-					<router-link to="/settings" active-class="is-active">
+					<router-link to="/settings" active-class="is-active" @click="handleNavClick">
 						<PhGearSix class="nav-icon" />
 						Settings
 					</router-link>
@@ -189,5 +204,23 @@ const accountStore = useAccountStore()
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 120px;
+}
+
+/* Mobile drawer */
+@media (max-width: 768px)
+{
+	.sidebar
+	{
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100vh;
+		z-index: 50;
+		transform: translateX(-100%);
+		transition: transform 0.22s ease;
+		box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+	}
+
+	.sidebar.is-open { transform: translateX(0); }
 }
 </style>

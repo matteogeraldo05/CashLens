@@ -13,3 +13,5 @@ Matteo De Angelis Geraldo: Can you help me improve my CSS styling, including lay
 Matteo De Angelis Geraldo: Can you suggest utility functions and help me handle edge cases for user input in my application?
 
 Zain Syed - Can you help me fix my subscription widget, the third one is wider than the first two
+Thaddeus Baturensky: Can you help me structure SettingsPage.vue?
+Thaddeus Baturensky: Can you comment my code, ensure each part of the code is properly commented and explained
