@@ -5,7 +5,7 @@ import {
 } from '@phosphor-icons/vue'
 
 const props = defineProps({
-	transaction: {
+	subscription: {
 		type: Object,
 		required: true,
 	},
@@ -71,38 +71,51 @@ function formatAmount(amount, type) {
 		return '-' + formatted
 	}
 }
+
+function getAnnualAmount(amount) { 
+    let num = amount.toFixed(2)
+    return num * 12 
+}
 </script>
 
 <template>
-	<tr class="tx-row" :data-merchant="transaction.merchant" @click="emit('edit', transaction)">
+	<tr class="sb-row" :data-merchant="subscription.merchant">
 
-		<!-- DATE -->
-		<td class="tx-date">{{ formatDate(transaction.date) }}</td>
+
 
 		<!-- MERCHANT -->
 		<td>
 			<div class="is-flex is-align-items-center" style="gap: 12px;">
-				<div class="category-icon" :style="{ background: getCategoryBg(transaction.category) }">
-					<component :is="getCategoryIcon(transaction.category)" :size="18" :color="getCategoryColor(transaction.category)" />
+				<div class="category-icon" :style="{ background: getCategoryBg(subscription.category) }">
+					<component :is="getCategoryIcon(subscription.category)" :size="18" :color="getCategoryColor(subscription.category)" />
 				</div>
-				<span class="merchant-name">{{ transaction.merchant }}</span>
+				<span class="merchant-name">{{ subscription.merchant }}</span>
 			</div>
 		</td>
 
-		<!-- CATEGORY -->
-		<td>
-			<span class="tag category-badge">{{ transaction.category.toUpperCase() }}</span>
-		</td>
+		<!-- Next Charge -->
+		<td class="sb-frequency">{{ subscription.frequency }}</td>
 
-		<!-- AMOUNT + EDIT -->
-		<td class="tx-amount" :class="transaction.type === 'income' ? 'amount--income' : 'amount--expense'">
-			<div class="is-flex is-align-items-center is-justify-content-flex-end" style="gap: 14px;">
-				<span>{{ formatAmount(transaction.amount, transaction.type) }}</span>
-				<button class="button is-small edit-btn" title="Edit transaction" @click="emit('edit', transaction)">
-					<span class="icon is-small"><PhPencilSimple :size="14" /></span>
-				</button>
-			</div>
-		</td>
+        <!-- Monthly Cost -->
+		<td class="sb-next_charge">{{ formatDate(subscription.next_charge) }}</td>
+        
+        <!-- Annual Cost -->
+		<td class="sb-monthly-cost">{{ subscription.monthly_cost }}</td>
+
+        
+		<!-- Actions -->
+		<td class="sb-annual-cost">{{ subscription.yearly_cost }}</td>
+
+
+        <!-- AMOUNT + EDIT -->
+        <td class="tx-amount">
+            <div class="is-flex is-align-items-center is-justify-content-flex-end" style="gap: 14px;">
+                <span>{{ formatAmount(subscription.frequency === 'monthly' ? subscription.monthly_cost : subscription.yearly_cost) }}</span>
+                <button class="button is-small edit-btn" title="Edit subscription" @click="emit('edit', subscription)">
+                    <span class="icon is-small"><PhPencilSimple :size="14" /></span>
+                </button>
+            </div>
+        </td>
 
 	</tr>
 </template>
@@ -126,6 +139,7 @@ function formatAmount(amount, type) {
 {
 	color: var(--text-muted);
 	white-space: nowrap;
+	width: 130px;
 }
 
 .category-icon
@@ -167,42 +181,4 @@ function formatAmount(amount, type) {
 }
 
 .edit-btn:hover { opacity: 1; }
-
-/* Mobile card layout */
-@media (max-width: 768px)
-{
-	.tx-row
-	{
-		display: grid;
-		grid-template-columns: 1fr auto;
-		gap: 4px 12px;
-		padding: 14px;
-		margin-bottom: 10px;
-		background: var(--surface);
-		border-radius: 12px;
-		border-bottom: none;
-		cursor: pointer;
-	}
-
-	.tx-row td            { padding: 0; border: none; font-size: 13px; }
-
-	/* merchant + icon — row 1, col 1 */
-	.tx-row td:nth-child(2) { grid-column: 1; grid-row: 1; }
-
-	/* date — row 2, col 1 */
-	.tx-row td:nth-child(1) { grid-column: 1; grid-row: 2; font-size: 12px; }
-
-	/* category tag — row 3, col 1 */
-	.tx-row td:nth-child(3) { grid-column: 1; grid-row: 3; }
-
-	/* amount — spans all rows, col 2 */
-	.tx-row td:nth-child(4)
-	{
-		grid-column: 2;
-		grid-row: 1 / span 3;
-		align-self: center;
-	}
-
-	.tx-row td:nth-child(4) .edit-btn { display: none; }
-}
 </style>

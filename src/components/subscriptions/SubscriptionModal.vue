@@ -1,39 +1,40 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { PhStorefront, PhTag, PhCalendarBlank } from '@phosphor-icons/vue'
-import { useTransactionStore } from '../../lib/stores'
+import { useSubscriptionStore } from '../../lib/stores'
 
 const props = defineProps({
-	transaction: { type: Object, default: null },
+	subscription: { type: Object, default: null },
 })
 
 const emit = defineEmits(['close', 'saved', 'deleted'])
-const store = useTransactionStore()
+const store = useSubscriptionStore()
 
-// are we editing an existing transaction or adding a new one?
-const isEdit = props.transaction !== null
+// are we editing an existing subscription or adding a new one?
+const isEdit = props.subscription !== null
 
 // today's date as default
 const today = new Date().toISOString().slice(0, 10)
 
 // form fields as individual refs
 const amountRaw = ref('')
-const type = ref('expense')
+const type = ref('monthly')
 const merchant = ref('')
 const category = ref('')
 const date = ref(today)
 const notes = ref('')
 
 // if editing, fill in the existing values
-if (props.transaction) {
-	amountRaw.value = String(props.transaction.amount)
-	type.value = props.transaction.type
-	merchant.value = props.transaction.merchant
-	category.value = props.transaction.category
-	date.value = props.transaction.date
-	if (props.transaction.notes) {
-		notes.value = props.transaction.notes
-	}
+if (props.subscription) {
+    const cost = props.subscription.monthly_cost ?? props.subscription.yearly_cost ?? 0
+    amountRaw.value = String(cost)
+    type.value = props.subscription.frequency
+    merchant.value = props.subscription.merchant
+    category.value = props.subscription.category
+    date.value = props.subscription.next_charge
+    if (props.subscription.notes) {
+        notes.value = props.subscription.notes
+    }
 }
 
 const submitted = ref(false)
@@ -77,7 +78,7 @@ const dateError = computed(() => {
 	return ''
 })
 
-// keep amount field clean (numbers and one dot only, max 2 decimal places)
+// keep amount field clean (numbers and one dot only)
 function onAmountInput(e) {
 	let val = e.target.value
 	val = val.replace(/[^0-9.]/g, '')
@@ -85,11 +86,6 @@ function onAmountInput(e) {
 	let parts = val.split('.')
 	if (parts.length > 2) {
 		val = parts[0] + '.' + parts.slice(1).join('')
-		parts = val.split('.')
-	}
-	// limit to 2 decimal places
-	if (parts.length === 2 && parts[1].length > 2) {
-		val = parts[0] + '.' + parts[1].slice(0, 2)
 	}
 	amountRaw.value = val
 }
@@ -105,21 +101,25 @@ async function handleSave() {
 
 	saving.value = true
 	serverErr.value = ''
+    
+    const amount = getAmountNum()
 
-	let payload = {
-		merchant: merchant.value.trim(),
-		category: category.value,
-		amount: getAmountNum(),
-		type: type.value,
-		date: date.value,
-		notes: notes.value.trim() || null,
-	}
+
+    let payload = {
+        merchant: merchant.value.trim(),
+        category: category.value,
+        frequency: type.value,
+        next_charge: date.value,
+        notes: notes.value.trim() || null,
+        monthly_cost: type.value === 'monthly' ? amount : Math.round((amount / 12) * 100) / 100,
+        yearly_cost:  type.value === 'yearly'  ? amount : Math.round((amount * 12) * 100) / 100,
+    }
 
 	let result
 	if (isEdit) {
-		result = await store.updateTransaction(props.transaction.id, payload)
+		result = await store.updateSubscription(props.subscription.id, payload)
 	} else {
-		result = await store.addTransaction(payload)
+		result = await store.addSubscription(payload)
 	}
 
 	saving.value = false
@@ -134,16 +134,12 @@ async function handleSave() {
 }
 
 async function handleDelete() {
-	if (!confirmDel.value) {
-		confirmDel.value = true
-		return
-	}
 	deleting.value = true
-	let result = await store.deleteTransaction(props.transaction.id)
+	let result = await store.deleteSubscription(props.subscription.id)
 	deleting.value = false
 
 	if (result.error) {
-		serverErr.value = result.error.message || 'Failed to delete transaction.'
+		serverErr.value = result.error.message || 'Failed to delete subscription.'
 		return
 	}
 
@@ -180,8 +176,11 @@ onUnmounted(() => {
 
 					<!-- Header -->
 					<header class="modal-card-head">
-						<p class="modal-card-title">{{ isEdit ? 'Edit Transaction' : 'Add Transaction' }}</p>
-						<button class="button cancel-header-btn" @click="close">CANCEL</button>
+						<div>
+							<p class="modal-card-title">{{ isEdit ? 'Edit Subscription' : 'Add Subscription' }}</p>
+							<span class="modal-sub">{{ isEdit ? 'MODIFY ENTRY' : 'NEW ENTRY' }}</span>
+						</div>
+						<button class="delete" aria-label="Close" @click="close"></button>
 					</header>
 
 					<!-- Body -->
@@ -207,8 +206,8 @@ onUnmounted(() => {
 
 						<!-- Type toggle -->
 						<div class="buttons has-addons is-centered type-toggle">
-							<button class="button type-btn" :class="{ 'type-btn--active': type === 'expense' }" @click="type = 'expense'">EXPENSE</button>
-							<button class="button type-btn" :class="{ 'type-btn--active': type === 'income' }" @click="type = 'income'">INCOME</button>
+							<button class="button type-btn" :class="{ 'type-btn--active': type === 'monthly' }" @click="type = 'monthly'">MONTHLY</button>
+							<button class="button type-btn" :class="{ 'type-btn--active': type === 'yearly' }" @click="type = 'yearly'">YEARLY</button>
 						</div>
 
 						<!-- Form fields -->
@@ -243,7 +242,7 @@ onUnmounted(() => {
 
 							<div class="column is-half">
 								<div class="field">
-									<label class="label">DATE</label>
+									<label class="label">RENEW DATE</label>
 									<div class="control has-icons-left">
 										<input v-model="date" class="input" :class="{ 'is-danger': dateError }" type="date" />
 										<span class="icon is-left"><PhCalendarBlank :size="15" /></span>
@@ -270,14 +269,20 @@ onUnmounted(() => {
 					<!-- Footer -->
 					<footer class="modal-card-foot">
 						<button class="button is-success" :disabled="saving" @click="handleSave">
-							{{ saving ? 'SAVING…' : (isEdit ? 'SAVE CHANGES' : 'SAVE TRANSACTION') }}
+							{{ saving ? 'SAVING…' : (isEdit ? 'SAVE CHANGES' : 'SAVE SUBSCRIPTION') }}
 						</button>
+						<button class="button" @click="close">CANCEL</button>
 
 						<!-- Delete only in edit mode -->
 						<div v-if="isEdit" class="delete-zone">
-							<button class="button is-danger is-outlined" :disabled="deleting" @click="handleDelete">
-								{{ deleting ? '…' : (confirmDel ? 'ARE YOU SURE?' : 'DELETE') }}
-							</button>
+							<button v-if="!confirmDel" class="button is-danger is-outlined" @click="confirmDel = true">DELETE</button>
+							<span v-else class="is-flex" style="gap: 6px; align-items: center;">
+								<span class="confirm-label">Are you sure?</span>
+								<button class="button is-danger is-small" :disabled="deleting" @click="handleDelete">
+									{{ deleting ? '…' : 'Yes, delete' }}
+								</button>
+								<button class="button is-small" @click="confirmDel = false">Cancel</button>
+							</span>
 						</div>
 					</footer>
 
@@ -290,23 +295,12 @@ onUnmounted(() => {
 <style scoped>
 .modal-card { max-width: 520px; width: 100%; }
 
-/* Header */
-.modal-card-head
+.modal-sub
 {
-	background: var(--surface-1, #1e1e1e);
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	box-shadow: none;
-	background-image: none;
-}
-
-.cancel-header-btn
-{
-	font-size: 13px;
+	font-size: 10px;
 	font-weight: 600;
-	letter-spacing: 0.08em;
-	margin-left: auto;
-	padding: 0.5em 1.2em;
-	height: auto;
+	letter-spacing: 0.1em;
+	color: var(--text-muted);
 }
 
 /* Amount section */
@@ -332,8 +326,7 @@ onUnmounted(() => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 2px;
-	padding-left: 20px;
+	gap: 6px;
 }
 
 .amount-dollar
@@ -341,7 +334,6 @@ onUnmounted(() => {
 	font-size: 36px;
 	font-weight: 300;
 	color: var(--accent);
-	line-height: 1;
 }
 
 .amount-input
@@ -352,10 +344,9 @@ onUnmounted(() => {
 	font-size: 42px;
 	font-weight: 300;
 	color: var(--accent);
-	width: 160px;
-	text-align: center;
+	width: 200px;
+	text-align: left;
 	caret-color: var(--accent);
-	line-height: 1;
 }
 
 .amount-input::placeholder { color: rgba(74, 222, 128, 0.35); }
@@ -378,7 +369,7 @@ onUnmounted(() => {
 .type-btn--active
 {
 	background: var(--surface-2) !important;
-	color: var(--accent) !important;
+	color: var(--text) !important;
 	border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
@@ -404,8 +395,16 @@ onUnmounted(() => {
 .modal-card-foot { gap: 10px; flex-wrap: wrap; }
 
 .modal-card-foot .button.is-success { flex: 2; }
+.modal-card-foot .button:not(.is-success):not(.is-danger) { flex: 1; }
 
 .delete-zone { margin-left: auto; }
+
+.confirm-label
+{
+	font-size: 12px;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
 
 /* Transition */
 .modal-fade-enter-active,
