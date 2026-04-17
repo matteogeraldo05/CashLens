@@ -155,9 +155,15 @@ function onDeleted() {
 
 			<!-- Loading skeleton -->
 			<table v-if="store.loading" class="table is-fullwidth tx-table">
+				<colgroup>
+					<col style="width: 130px" />
+					<col />
+					<col style="width: 140px" />
+					<col style="width: 220px" />
+				</colgroup>
 				<thead>
 					<tr>
-						<th>DATE</th><th>MERCHANT</th><th>CATEGORY</th><th class="has-text-right">AMOUNT</th>
+						<th>DATE</th><th>MERCHANT</th><th>CATEGORY</th><th class="amount-th">AMOUNT</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -182,12 +188,18 @@ function onDeleted() {
 
 			<!-- Table with rows -->
 			<table v-else id="tx-table" class="table is-fullwidth is-hoverable tx-table">
+				<colgroup>
+					<col style="width: 130px" />
+					<col />
+					<col style="width: 140px" />
+					<col style="width: 220px" />
+				</colgroup>
 				<thead>
 					<tr>
 						<th>DATE</th>
 						<th>MERCHANT</th>
 						<th>CATEGORY</th>
-						<th class="has-text-right">AMOUNT</th>
+						<th class="amount-th">AMOUNT</th>
 					</tr>
 				</thead>
 				<TransitionGroup name="row" tag="tbody" appear>
@@ -250,6 +262,23 @@ function onDeleted() {
 }
 
 .tx-table { margin-bottom: 0; }
+
+.tx-table th
+{
+	padding: 14px 20px;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	color: var(--text-muted);
+	border: none;
+}
+
+.tx-table th.amount-th
+{
+	text-align: right;
+	/* offset matches the td's flex-end: right-pad(20px) + edit-btn(~28px) + gap(14px) */
+	padding-right: calc(20px + 28px + 14px);
+}
 
 /* Skeleton */
 .skeleton-row td { padding: 18px 20px; }
@@ -326,5 +355,30 @@ function onDeleted() {
 {
 	from { opacity: 0; transform: translateY(12px); }
 	to   { opacity: 1; transform: none; }
+}
+
+/* Mobile layout */
+@media (max-width: 768px)
+{
+	.tx-page { padding: 20px 16px; }
+
+	.tx-topbar { margin-bottom: 18px; }
+	.tx-title  { font-size: 22px; }
+
+	.filter-row { flex-wrap: wrap; gap: 8px; }
+	.filter-row .control { width: 100%; }
+	.filter-row .select,
+	.filter-row .select select { width: 100%; }
+
+	.tx-table thead            { display: none; }
+	.tx-table, .tx-table tbody { display: block; }
+
+	.tx-table-wrap
+	{
+		background: transparent;
+		border: none;
+		box-shadow: none;
+		padding: 0;
+	}
 }
 </style>

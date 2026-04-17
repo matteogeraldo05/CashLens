@@ -74,7 +74,7 @@ function formatAmount(amount, type) {
 </script>
 
 <template>
-	<tr class="tx-row" :data-merchant="transaction.merchant">
+	<tr class="tx-row" :data-merchant="transaction.merchant" @click="emit('edit', transaction)">
 
 		<!-- DATE -->
 		<td class="tx-date">{{ formatDate(transaction.date) }}</td>
@@ -126,7 +126,6 @@ function formatAmount(amount, type) {
 {
 	color: var(--text-muted);
 	white-space: nowrap;
-	width: 130px;
 }
 
 .category-icon
@@ -168,4 +167,42 @@ function formatAmount(amount, type) {
 }
 
 .edit-btn:hover { opacity: 1; }
+
+/* Mobile card layout */
+@media (max-width: 768px)
+{
+	.tx-row
+	{
+		display: grid;
+		grid-template-columns: 1fr auto;
+		gap: 4px 12px;
+		padding: 14px;
+		margin-bottom: 10px;
+		background: var(--surface);
+		border-radius: 12px;
+		border-bottom: none;
+		cursor: pointer;
+	}
+
+	.tx-row td            { padding: 0; border: none; font-size: 13px; }
+
+	/* merchant + icon — row 1, col 1 */
+	.tx-row td:nth-child(2) { grid-column: 1; grid-row: 1; }
+
+	/* date — row 2, col 1 */
+	.tx-row td:nth-child(1) { grid-column: 1; grid-row: 2; font-size: 12px; }
+
+	/* category tag — row 3, col 1 */
+	.tx-row td:nth-child(3) { grid-column: 1; grid-row: 3; }
+
+	/* amount — spans all rows, col 2 */
+	.tx-row td:nth-child(4)
+	{
+		grid-column: 2;
+		grid-row: 1 / span 3;
+		align-self: center;
+	}
+
+	.tx-row td:nth-child(4) .edit-btn { display: none; }
+}
 </style>
