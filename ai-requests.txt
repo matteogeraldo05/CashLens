@@ -1,7 +1,15 @@
-Alexis Ryan - March 15 4:30pm: add comments on top of all files in src explaining what the file is meant to do
+Alexis Ryan - add comments on top of all files in src explaining what the file is meant to do
+Alexis Ryan - Why is it that the bulma columns css alignement breaks when going to a mobile view
+Alexis Ryan - when i log in there is a short period of time where the Sidebar.vue shows up before the app main transfers to the dashboard how do i make it so the sidebar only shows up when its appropriated (after login screen no longer there)\
+Alexis Ryan - Help me add edge case protection in the budget modal and page to avoid invalid inputs or saves to the budgets
+Alexis Ryan - Why is it that on inital load the transactions calculations arent fetched in time and how can I fix this
+Alexis Ryan - Add comments above sections of budgetmodal and budgetspage explaining functionality
+Alexis Ryan - Analyze current project structure and add to the readme where each objective evaluation is used
 
 Matteo De Angelis Geraldo: used GitHub Copilot autocomplete when building components
 Matteo De Angelis Geraldo: Can you help me structure TransactionModal.vue and TransactionsPage.vue, including form handling, validation logic, and modal state management?
 Matteo De Angelis Geraldo: I’m having issues with filtering, sorting, and reactivity in my transactions list—can you help me debug and fix these problems?
 Matteo De Angelis Geraldo: Can you help me improve my CSS styling, including layout, spacing, color palette, and overall visual consistency?
 Matteo De Angelis Geraldo: Can you suggest utility functions and help me handle edge cases for user input in my application?
+
+Zain Syed - can you help me fix my subscription widget, the third one is wider than the first two

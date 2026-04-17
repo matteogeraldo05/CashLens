@@ -120,6 +120,7 @@ export const useAccountStore = defineStore('account', {
 export const useTransactionStore = defineStore('transactions', {
 	state: () => ({
 		transactions: [],
+		budgets: [],
 		loading: false,
 		error: null,
 		currentPage: 1,
@@ -135,6 +136,7 @@ export const useTransactionStore = defineStore('transactions', {
 		},
 
 		totalPages: (state) => Math.ceil(state.transactions.length / state.pageSize),
+		totalBudgets: (state) => state.budgets.length,
 	},
 
 	actions: {
@@ -237,5 +239,235 @@ export const useTransactionStore = defineStore('transactions', {
 		resetError() {
 			this.error = null;
 		},
+
+		// budget actions added to transactions store
+		async fetchBudgets() {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return;
+
+			this.loading = true;
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('budgets')
+				.select('*')
+				.eq('user_id', uid)
+				.order('created_at', { ascending: false });
+
+			this.loading = false;
+
+			if (error) {
+				this.error = error.message;
+			} else {
+				this.budgets = data ?? [];
+			}
+		},
+
+		async addBudget(payload) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('budgets')
+				.insert({
+					...payload,
+					user_id: uid,
+					created_at: new Date().toISOString(),
+				})
+				.select()
+				.single();
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			this.budgets.unshift(data);
+			return { data };
+		},
+
+		async updateBudget(id, payload) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('budgets')
+				.update({
+					...payload,
+					updated_at: new Date().toISOString(),
+				})
+				.eq('id', id)
+				.eq('user_id', uid)
+				.select()
+				.single();
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			const idx = this.budgets.findIndex((b) => b.id === id);
+			if (idx !== -1) this.budgets[idx] = data;
+			return { data };
+		},
+
+		async deleteBudget(id) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { error } = await supabase
+				.from('budgets')
+				.delete()
+				.eq('id', id)
+				.eq('user_id', uid);
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			this.budgets = this.budgets.filter((b) => b.id !== id);
+			return {};
+		},
 	},
 });
+
+
+export const useSubscriptionStore = defineStore('subscriptions', {
+	state: () => ({
+		subscriptions: [],
+		loading: false,
+		error: null,
+		currentPage: 1,
+		pageSize: 6,
+	}),
+
+	getters: {
+		totalCount: (state) => state.subscriptions.length,
+
+		paginatedSubscriptions: (state) => {
+			const start = (state.currentPage - 1) * state.pageSize;
+			return state.subscriptions.slice(start, start + state.pageSize);
+		},
+
+		totalPages: (state) => Math.ceil(state.subscriptions.length / state.pageSize),
+	},
+
+	actions: {
+		async fetchSubscriptions() {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return;
+
+			this.loading = true;
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('subscriptions')
+				.select('*')
+				.eq('user_id', uid)
+				.order('next_charge', { ascending: false });
+
+			this.loading = false;
+
+			if (error) {
+				this.error = error.message;
+			} else {
+				this.subscriptions = data ?? [];
+			}
+		},
+
+		async addSubscription(payload) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('subscriptions')
+				.insert({ ...payload, user_id: uid })
+				.select()
+				.single();
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			this.subscriptions.unshift(data);
+			return { data };
+		},
+
+		async updateSubscription(id, payload) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { data, error } = await supabase
+				.from('subscriptions')
+				.update(payload)
+				.eq('id', id)
+				.eq('user_id', uid)
+				.select()
+				.single();
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			const idx = this.subscriptions.findIndex((t) => t.id === id);
+			if (idx !== -1) this.subscriptions[idx] = data;
+			return { data };
+		},
+
+		async deleteSubscription(id) {
+			const accountStore = useAccountStore();
+			const uid = accountStore.user?.id;
+			if (!uid) return { error: 'Not authenticated' };
+
+			this.error = null;
+
+			const { error } = await supabase
+				.from('subscriptions')
+				.delete()
+				.eq('id', id)
+				.eq('user_id', uid);
+
+			if (error) {
+				this.error = error.message;
+				return { error };
+			}
+
+			this.subscriptions = this.subscriptions.filter((t) => t.id !== id);
+			return {};
+		},
+
+		setPage(n) {
+			this.currentPage = n;
+		},
+
+		resetError() {
+			this.error = null;
+		},
+
+
+	
+
+	},
+});
+
+
