@@ -25,6 +25,26 @@ CashLens is a full-stack web application that gives users a single place to unde
 
 ---
 
+## Requirements and their implementation
+
+| Requirement | Implementation
+|---|---|
+| **SVG and HTML** | Semantic HTML structure with `<nav>`, `<main>`, and `<aside>` tags in [App.vue](src/App.vue). Form elements (`<form>`, `<input>`, `<label>`) in [LoginPage.vue](src/components/LoginPage.vue) for auth. Table structure (`<table>`, `<thead>`, `<tbody>`, `<tr>`, `<td>`) in [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue) and [SubscriptionsPage.vue](src/components/subscriptions/SubscriptionsPage.vue). Navigation lists in [Sidebar.vue](src/components/shared/Sidebar.vue) using semantic `<nav>` and `<ul>`/`<li>` elements.
+| **CSS and CSS frameworks** | Bulma CSS framework imported in [style.css](src/style.css) for responsive grid layout (columns, level, is-half-mobile, is-one-third-tablet classes). Custom CSS variables (--bg, --surface, --accent, --danger, --text, --text-muted) for dark theme. Scoped component styles in [Sidebar.vue](src/components/shared/Sidebar.vue), [BudgetModal.vue](src/components/budgets/BudgetModal.vue), [TransactionModal.vue](src/components/transactions/TransactionModal.vue). Flexbox layout and media queries (@media) for responsive design in [App.vue](src/App.vue). 
+| **JavaScript, jQuery, D3** | Vue 3 Composition API with reactive `ref()` and computed properties for state management in all components. jQuery used in [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue) for dynamic table filtering: `$("#search").on('input', runSearch)`, `$(this).show()`, `$(this).hide()`. JavaScript array methods (.filter(), .sort()) for sorting transactions by date/amount/merchant. D3 charts in [BalanceChart.vue](src/components/analytics/D3Graphs/BalanceChart.vue), [BudgetTrend.vue](src/components/analytics/D3Graphs/BudgetTrend.vue), [HorizonChart.vue](src/components/analytics/D3Graphs/HorizonChart.vue), [PieChart.vue](src/components/analytics/D3Graphs/PieChart.vue).
+| **Dynamic DOM** | Vue `v-if` directives conditionally render modals: [TransactionModal.vue](src/components/transactions/TransactionModal.vue) shown when `modalTx` ref is truthy. `v-for` loops render transaction rows in [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue) iterating over computed `visible` property. Computed property `visible` in [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue) filters/sorts transactions dynamically. `v-if="accountStore.isAuthenticated"` in [App.vue](src/App.vue) toggles between login and authenticated layouts. Modal creation/destruction based on ref state in [BudgetModal.vue](src/components/budgets/BudgetModal.vue) and [SubscriptionModal.vue](src/components/subscriptions/SubscriptionModal.vue).
+| **AJAX, web services** | Supabase SDK async/await calls in [stores.js](src/lib/stores.js): `fetchTransactions()`, `addTransaction()`, `updateTransaction()`, `deleteTransaction()`, `fetchBudgets()`, `addBudget()`, `initAuth()`, `login()`, `register()`, `logout()`. Real-time database queries on PostgreSQL tables (transactions, budgets, profiles, subscriptions). Supabase Auth integration with JWT for login/register workflow in `useAccountStore`. Routes wrapped with `router.beforeEach()` guard in [router.js](src/router.js) checking auth state.
+| **Node.js/Express.js/Nuxt-nitro** | Node.js runtime via Vite dev server configured in [vite.config.js](vite.config.js) with Vue plugin. Supabase SDK (Node.js/ES6 module compatible) in [stores.js](src/lib/stores.js) handles backend request processing: authentication via `supabase.auth.signInWithPassword()`, database queries via `supabase.from('table_name').select()`, and real-time subscriptions. Supabase acts as backend service layer processing all CRUD operations on PostgreSQL database. Bootstrap entry point in [main.js](src/main.js) creates Vue app, initializes Pinia and Vue Router.
+| **Vue framework** | Vue 3 Composition API with `<script setup>` in all components. Vue Router configured in [router.js](src/router.js) with lazy-loaded routes for all pages (dashboard, transactions, budgets, subscriptions, analytics, settings) and global route guard for authentication. Pinia stores in [stores.js](src/lib/stores.js): `useAccountStore()` for auth and profile, `useTransactionStore()` for transactions/budgets. Single-file components (.vue) with scoped CSS. v-model two-way binding in form inputs ([LoginPage.vue](src/components/LoginPage.vue), [TransactionModal.vue](src/components/transactions/TransactionModal.vue)). provide/inject for sidebar context in [App.vue](src/App.vue) and [MobileHeader.vue](src/components/shared/MobileHeader.vue). 
+
+---
+## How To run:
+The .env file is inside the zipped up submission file with our api keys for grading purposes. We will rotate the keys once graded for safety. All that is needed to run the project is:
+1. Download zipped up file
+2. Run npm i
+3. Run npm run dev
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -41,19 +61,5 @@ CashLens is a full-stack web application that gives users a single place to unde
 | Auth | Supabase Auth |
 | External APIs | Alpha Vantage, ExchangeRate-API |
 | Deployment | Vercel (frontend), Railway (backend) |
-
----
-
-## Course Concept Implementation
-
-| Requirement | Implementation
-|---|---|
-| **SVG and HTML** | HTML semantic structure with semantic tags (nav, main, aside) in [App.vue](src/App.vue) and [Sidebar.vue](src/components/shared/Sidebar.vue). Form elements and table structure in [LoginPage.vue](src/components/LoginPage.vue) and [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue). 
-| **CSS and CSS frameworks** | Bulma CSS framework imported in [style.css](src/style.css) for responsive grid layout (columns, level classes). Custom CSS variables and scoped component styles in [Sidebar.vue](src/components/shared/Sidebar.vue), modals, and page components. Dark theme styling with CSS custom properties (--bg, --surface, --accent, etc.). 
-| **JavaScript, jQuery, D3** | Vue 3 Composition API with reactive refs and computed properties for state management. jQuery used in [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue) for dynamic table row filtering via $("#search").on() and $(this).show()/hide(). JavaScript array methods for filtering and sorting. No D3.js (Analytics page not yet implemented). 
-| **Dynamic DOM** | Vue conditionally renders modals: [TransactionModal.vue](src/components/transactions/TransactionModal.vue) and [BudgetModal.vue](src/components/budgets/BudgetModal.vue) created/destroyed based on ref state. Computed property `visible` in [TransactionsPage.vue](src/components/transactions/TransactionsPage.vue) filters transaction rows dynamically. v-if/v-for directives render UI based on application state. 
-| **AJAX, web services** | Supabase SDK calls in [stores.js](src/lib/stores.js) using async/await for CRUD operations: fetchTransactions(), addTransaction(), updateTransaction(), deleteTransaction(), fetchBudgets(), etc. Supabase Auth integration for login/register workflow. Real-time database queries on PostgreSQL tables (transactions, budgets, profiles). 
-| **Node.js/Express.js/Nuxt-nitro** | Node.js runtime via Vite dev server ([vite.config.js](vite.config.js)). Supabase SDK (Node.js-compatible) in [stores.js](src/lib/stores.js) handles backend request processing: authentication, database queries, and real-time subscriptions. Supabase acts as the backend service layer processing all CRUD operations on PostgreSQL. Supabase handles the Express.js and Nuxt Nitro requirements as it essentially does the same thing but with supabase for example, const { data, error } = await supabase.from('transactions').select('*').eq('user_id', uid) in express would be a get from the database but in our case we can await supabase for this and supabase transforms it into a REST call on the server.
-| **Vue framework** | Vue 3 Composition API throughout all components with setup scripts. Vue Router with lazy-loaded routes and authentication guard in [router.js](src/router.js). Pinia stores for state management (useAccountStore, useTransactionStore). Single-file components (.vue) with scoped CSS. v-model two-way binding in forms ([TransactionModal.vue](src/components/transactions/TransactionModal.vue), [LoginPage.vue](src/components/LoginPage.vue)). 
 
 ---

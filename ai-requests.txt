@@ -5,6 +5,7 @@ Alexis Ryan - Help me add edge case protection in the budget modal and page to a
 Alexis Ryan - Why is it that on inital load the transactions calculations arent fetched in time and how can I fix this
 Alexis Ryan - Add comments above sections of budgetmodal and budgetspage explaining functionality
 Alexis Ryan - Analyze current project structure and add to the readme where each objective evaluation is used
+Alexis Ryan - Go over the project and fill out this table with where each requirement can be found
 
 Matteo De Angelis Geraldo: used GitHub Copilot autocomplete when building components
 Matteo De Angelis Geraldo: Can you help me structure TransactionModal.vue and TransactionsPage.vue, including form handling, validation logic, and modal state management?
