@@ -48,6 +48,13 @@ Added budgets:
 Zain Syed :
 
 Added subscriptions:
-- Allows users to keep track of subscriptions.
+- Allows users to add, delete, and modify their subscriptions.
+- Added widgets, displaying summary statistics of subscriptions
+- Users can enter yearly subscriptions and monthly subscriptions.
+- Each subscription is then added to the database, along with their attributes.
+- The page will then display the users monthly average spending on subscriptions, and yearly spending on subscriptions.
 - Active subscriptions are tracked at the top right, telling the users how many current active subscriptions they have.
-- Monthly and yearly costs are calculated and tracked at the top aswell.
+
+
+Added Dashboard : 
+- Worked on designing total income widget
