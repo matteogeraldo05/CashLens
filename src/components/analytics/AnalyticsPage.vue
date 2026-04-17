@@ -14,6 +14,7 @@ const { user } = storeToRefs(accountStore);
 
 // State for transactions and loading/error status
 const transactions = ref([]);
+const budgets = ref([]);
 const loading = ref(false);
 const error = ref('');  
 const monthRange = ref(3); // Last 6 months
@@ -53,12 +54,29 @@ async function fetchTransactions() {
 
   }
 
+  async function fetchBudgets() {
+    const { data, error: err } = await supabase
+        .from('budgets')
+        .select('category, monthly_allocation')
+        .eq('user_id', user.value.id);
+
+    if (err) {
+        error.value = err.message;
+    } else {
+        budgets.value = data;
+        console.log('budgets:', budgets.value);
+    }
+}
+
   function setRange(months) {
       monthRange.value = months;
       fetchTransactions();
     }
 
-  onMounted(fetchTransactions);
+  onMounted(() => {
+    fetchTransactions();
+    fetchBudgets();
+  });
 
     
 const pulseData = computed(() => {
