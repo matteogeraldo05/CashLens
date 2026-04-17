@@ -10,4 +10,5 @@ const { username } = storeToRefs(accountStore);
 <template>
   <p>Hi {{ username }}</p>
   <button class="button" @click="accountStore.logout()">Logout</button>
+  <button class="button" @click="$router.push('/analytics')">Analytics</button>
 </template>
