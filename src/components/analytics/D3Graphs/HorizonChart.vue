@@ -39,7 +39,7 @@ function buildChart() {
 	const lastValue  = historical[lastIndex].value;
 
 	// forecast band: ±20% around projected net
-	const projected  = props.forecast.projectedNet;
+	const projected = props.forecast[props.forecast.length - 1].projectedNet;
 	const upper      = Math.round(projected * 1.2);
 	const lower      = Math.round(projected * 0.8);
 

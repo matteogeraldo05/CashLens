@@ -125,29 +125,23 @@ const balanceData = computed(() =>
 // horizon chart data (projection based on recent trends)
 const horizonData = computed(() => {
 	const last3 = balanceData.value.slice(-3);
-	// Need at least 3 months to make a projection
 	if (last3.length === 0) return null;
-  // Simple projection: average of last 3 months for income/expense/net
-	const avgIncome  = last3.reduce((s, r) => s + r.income, 0)  / last3.length;
+
+	const avgIncome  = last3.reduce((s, r) => s + r.income, 0) / last3.length;
 	const avgExpense = last3.reduce((s, r) => s + r.expense, 0) / last3.length;
 	const avgNet     = avgIncome - avgExpense;
 
-  // label for next month
-  const i = balanceData.value.length;
-  const nextMonth = new Date();
-  nextMonth.setDate(1);
-  nextMonth.setMonth(nextMonth.getMonth() + i);
-
-  // Format as "Mon YYYY"
-	const label = nextMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-  // Return projection data
-	return {
-		label,
-		projectedIncome:  Math.round(avgIncome),
-		projectedExpense: Math.round(avgExpense),
-		projectedNet:     Math.round(avgNet),
-	};
+	return Array.from({ length: 3 }, (_, i) => {
+		const d = new Date();
+		d.setDate(1);
+		d.setMonth(d.getMonth() + i + 1);
+		return {
+			label:           d.toLocaleString('default', { month: 'short' }).toUpperCase(),
+			projectedIncome:  Math.round(avgIncome),
+			projectedExpense: Math.round(avgExpense),
+			projectedNet:     Math.round(avgNet),
+		};
+	});
 });
 // Helper to get last N months as { key: 'YYYY-MM', label: 'Mon' }
  function getLastNMonths() {
