@@ -107,5 +107,7 @@ watch(() => props.data, buildChart, { deep: true });
 </script>
 
 <template>
-	<div ref="containerRef"></div>
+	<div style="display: flex; align-items: center; gap: 24px;">
+		<div ref="containerRef" style="flex: 1;"></div>
+	</div>
 </template>
