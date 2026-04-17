@@ -3,11 +3,14 @@ import { reactive, computed } from 'vue';
 import { useAccountStore } from '../../lib/stores';
 import { supabase } from '../../lib/supabase';
 
+// access global auth/profile state (Pinia)
 const accountStore = useAccountStore();
 
 /**
- * Snapshot of current DB values
- * Used to compare changes + reset form
+ * Holds the last saved values from the DB
+ * Used for:
+ * - detecting changes
+ * - resetting form (discard)
  */
 const original = reactive({
   username: accountStore?.username || '',
@@ -16,12 +19,14 @@ const original = reactive({
 });
 
 /**
- * Editable form state (what user changes in UI)
+ * Editable form state (what user is currently typing/selecting)
+ * Starts as a copy of original
  */
 const form = reactive({ ...original });
 
 /**
- * Password fields are separate because they are optional
+ * Password fields are separate since they are optional
+ * (user might not be changing password at all)
  */
 const password = reactive({
   current: '',
@@ -30,8 +35,8 @@ const password = reactive({
 });
 
 /**
- * Determines whether user has unsaved changes
- * Includes both profile edits + password edits
+ * Checks if anything has changed compared to original state
+ * Used to enable/disable Save + Discard buttons
  */
 const hasChanges = computed(() =>
   form.username !== original.username ||
@@ -43,8 +48,21 @@ const hasChanges = computed(() =>
 );
 
 /**
- * Soft delete account (disable instead of removing data)
- * Keeps user record but prevents access
+ * Tracks currency changes specifically
+ * Gives both old and new values (useful for logging or conversions later)
+ */
+const currencyChange = computed(() => {
+  if (form.currency === original.currency) return null;
+
+  return {
+    from: original.currency,
+    to: form.currency
+  };
+});
+
+/**
+ * "Delete account" = soft delete
+ * Marks user as disabled instead of removing data
  */
 async function deleteAccount() {
   const user = accountStore.user;
@@ -60,6 +78,7 @@ async function deleteAccount() {
 
     if (error) throw error;
 
+    // log user out after disabling account
     await accountStore.logout();
   } catch (err) {
     console.error(err);
@@ -68,18 +87,18 @@ async function deleteAccount() {
 }
 
 /**
- * Save all profile + auth changes
+ * Saves all settings changes
  * Handles:
  * - profile updates (username/email/currency)
  * - auth email update
- * - password update
+ * - password change
  */
 async function saveSettings() {
   try {
     const user = accountStore.user;
     if (!user) throw new Error('Not logged in');
 
-    // update profile table
+    // update profile table (main user data)
     const { error: profileError } = await supabase
       .from('profiles')
       .update({
@@ -91,7 +110,7 @@ async function saveSettings() {
 
     if (profileError) throw profileError;
 
-    // sync email with Supabase Auth if changed
+    // update email in Supabase Auth (separate system)
     if (form.email !== original.email) {
       const { error: emailError } = await supabase.auth.updateUser({
         email: form.email
@@ -100,7 +119,7 @@ async function saveSettings() {
       if (emailError) throw emailError;
     }
 
-    // update password if provided
+    // update password if user entered one
     if (password.new) {
       if (password.new !== password.confirm) {
         throw new Error('Passwords do not match');
@@ -113,10 +132,20 @@ async function saveSettings() {
       if (passError) throw passError;
     }
 
-    // refresh baseline state after successful save
+    // log currency change (for debugging / future conversion logic)
+    if (currencyChange.value) {
+      console.log(
+        `Currency changed from ${currencyChange.value.from} → ${currencyChange.value.to}`
+      );
+    }
+
+    // update original snapshot to match saved state
     Object.assign(original, form);
 
-    // clear password inputs
+    // refresh store from DB (keeps global state in sync)
+    await accountStore.loadProfile(user.id);
+
+    // clear password inputs after save
     password.current = '';
     password.new = '';
     password.confirm = '';
@@ -129,7 +158,8 @@ async function saveSettings() {
 }
 
 /**
- * Revert form back to last saved state
+ * Reverts form back to last saved values
+ * Also clears password inputs
  */
 function discardChanges() {
   Object.assign(form, original);
