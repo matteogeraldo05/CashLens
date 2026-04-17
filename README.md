@@ -18,11 +18,10 @@ CashLens is a full-stack web application that gives users a single place to unde
 - **User authentication** — Supabase Auth with JWT verification on every Express route
 
 ### Charts (all built in raw D3.js)
-- **Spending timeline** — line and area chart of daily net balance with custom scales, animated paths, and hover tooltips
-- **Category donut** — arc chart of spending by category, animated on load, click a slice to filter transactions
-- **Monthly bar chart** — grouped bars comparing income vs expenses for the last 6 months
-- **Stock sparklines** — 30-day price history mini chart per watchlist card
-
+- **Category donut** — arc chart of spending by category, percentage legend, and colour palette matched to app theme
+- **Monthly bar chart** — grouped bars comparing income vs expenses per month, with y-axis gridlines, dollar-formatted tick labels, can be viewed in table mode
+- **Budget vs actual trend** — multi-line chart per category comparing monthly spend against budget allocation, with over-budget dot indicators and per-category toggle buttons with a warning for over-spending
+- **Horizon forecast** — line chart analysing the last 3 months of net balance extending into a 3-month dashed forecast with projected values.
 ---
 
 ## Requirements and their implementation
