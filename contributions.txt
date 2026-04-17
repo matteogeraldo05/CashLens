@@ -5,6 +5,9 @@ Added analyitcs:
 - Compares The budget with the Actual spending, allowing the users to view if they're following their budget properly
 - Generates future projections based on historical data
 
+Added dashboard:
+- Allows users to get an idea of whats happening with their spending
+- Shows total balance, their monthly income and total spent
 
 Thaddeus Baturensky : 
 
