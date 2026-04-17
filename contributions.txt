@@ -1,13 +1,14 @@
 Thomas Petkovic : Added AnalyticsPage.vue -
 
-Added analyitcs:
+Added analytics:
 - Allows users to display their expense/income as a graph or as a table 
 - Compares The budget with the Actual spending, allowing the users to view if they're following their budget properly
 - Generates future projections based on historical data
+- Warns the user of if they go over budget
 
 Added dashboard:
 - Allows users to get an idea of whats happening with their spending
-- Shows total balance, their monthly income and total spent
+- Shows total balance, their income and total spent within the month
 
 Thaddeus Baturensky : 
 
