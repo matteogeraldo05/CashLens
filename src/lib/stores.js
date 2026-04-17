@@ -26,7 +26,7 @@ export const useAccountStore = defineStore('account', {
 
 			const { data, error } = await supabase
 				.from('profiles')
-				.select('id, username, email')
+				.select('id, username, email, currency')
 				.eq('id', userId)
 				.maybeSingle();
 
