@@ -177,7 +177,7 @@ const widgets = computed(() => [
 	<div class="level tx-topbar">
 		<div class="level-left">
 			<div class="level-item">
-				<h1 class="tx-title">Dashboard, Welcome {{ username }} </h1>
+				<h1 class="tx-title">Welcome {{ username }} </h1>
 			</div>
 		</div>
 		<div class="level-right">
