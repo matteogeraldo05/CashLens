@@ -16,3 +16,9 @@ Matteo De Angelis Geraldo: Can you suggest utility functions and help me handle 
 Zain Syed - Can you help me fix my subscription widget, the third one is wider than the first two
 Thaddeus Baturensky: Can you help me structure SettingsPage.vue?
 Thaddeus Baturensky: Can you comment my code, ensure each part of the code is properly commented and explained
+
+Thomas Petkovic: How can i structure AnalyticsPage.vue to have 4 sets of data?
+Thomas Petkovic: Would it be better to include the D3 functionality in seperate files?
+Thomas Petkovic: Would enabling real time on my database allow for better integration with the app?
+Thomas Petkovic: Can you suggest ways to improve the overall look of my page?
+Thomas petkovic Can you help with comments to ensure clear understanding for the user?
