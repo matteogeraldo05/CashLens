@@ -1,1 +1,7 @@
 Alexis Ryan - March 15 4:30pm: add comments on top of all files in src explaining what the file is meant to do
+
+Matteo De Angelis Geraldo: used GitHub Copilot autocomplete when building components
+Matteo De Angelis Geraldo: Can you help me structure TransactionModal.vue and TransactionsPage.vue, including form handling, validation logic, and modal state management?
+Matteo De Angelis Geraldo: I’m having issues with filtering, sorting, and reactivity in my transactions list—can you help me debug and fix these problems?
+Matteo De Angelis Geraldo: Can you help me improve my CSS styling, including layout, spacing, color palette, and overall visual consistency?
+Matteo De Angelis Geraldo: Can you suggest utility functions and help me handle edge cases for user input in my application?
