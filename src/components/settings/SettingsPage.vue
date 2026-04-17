@@ -199,6 +199,27 @@ function discardChanges() {
       <input class="input" type="password" placeholder="Confirm password" v-model="password.confirm" />
     </section>
 
+    <!-- Currency -->
+    <section class="box">
+        <h2 class="subtitle">Preferences</h2>
+
+        <div class="currency-buttons">
+            <button
+                v-for="c in ['USD','CAD','EUR','GBP']"
+                :key="c"
+                class="button"
+                :class="{ 'is-active': form.currency === c }"
+                @click="form.currency = c"
+                >
+                {{ c }}
+            </button>
+        </div>
+
+        <p v-if="currencyChange" class="mt-2">
+            Switching from {{ currencyChange.from }} → {{ currencyChange.to }}
+        </p>
+    </section>
+
     <!-- ACTIONS -->
     <div class="is-flex is-justify-content-flex-end mt-5" style="gap: 10px;">
 
