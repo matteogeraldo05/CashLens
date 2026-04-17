@@ -77,7 +77,7 @@ const dateError = computed(() => {
 	return ''
 })
 
-// keep amount field clean (numbers and one dot only)
+// keep amount field clean (numbers and one dot only, max 2 decimal places)
 function onAmountInput(e) {
 	let val = e.target.value
 	val = val.replace(/[^0-9.]/g, '')
@@ -85,6 +85,11 @@ function onAmountInput(e) {
 	let parts = val.split('.')
 	if (parts.length > 2) {
 		val = parts[0] + '.' + parts.slice(1).join('')
+		parts = val.split('.')
+	}
+	// limit to 2 decimal places
+	if (parts.length === 2 && parts[1].length > 2) {
+		val = parts[0] + '.' + parts[1].slice(0, 2)
 	}
 	amountRaw.value = val
 }
@@ -129,6 +134,10 @@ async function handleSave() {
 }
 
 async function handleDelete() {
+	if (!confirmDel.value) {
+		confirmDel.value = true
+		return
+	}
 	deleting.value = true
 	let result = await store.deleteTransaction(props.transaction.id)
 	deleting.value = false
@@ -171,11 +180,8 @@ onUnmounted(() => {
 
 					<!-- Header -->
 					<header class="modal-card-head">
-						<div>
-							<p class="modal-card-title">{{ isEdit ? 'Edit Transaction' : 'Add Transaction' }}</p>
-							<span class="modal-sub">{{ isEdit ? 'MODIFY ENTRY' : 'NEW ENTRY' }}</span>
-						</div>
-						<button class="delete" aria-label="Close" @click="close"></button>
+						<p class="modal-card-title">{{ isEdit ? 'Edit Transaction' : 'Add Transaction' }}</p>
+						<button class="button cancel-header-btn" @click="close">CANCEL</button>
 					</header>
 
 					<!-- Body -->
@@ -266,18 +272,12 @@ onUnmounted(() => {
 						<button class="button is-success" :disabled="saving" @click="handleSave">
 							{{ saving ? 'SAVING…' : (isEdit ? 'SAVE CHANGES' : 'SAVE TRANSACTION') }}
 						</button>
-						<button class="button" @click="close">CANCEL</button>
 
 						<!-- Delete only in edit mode -->
 						<div v-if="isEdit" class="delete-zone">
-							<button v-if="!confirmDel" class="button is-danger is-outlined" @click="confirmDel = true">DELETE</button>
-							<span v-else class="is-flex" style="gap: 6px; align-items: center;">
-								<span class="confirm-label">Are you sure?</span>
-								<button class="button is-danger is-small" :disabled="deleting" @click="handleDelete">
-									{{ deleting ? '…' : 'Yes, delete' }}
-								</button>
-								<button class="button is-small" @click="confirmDel = false">Cancel</button>
-							</span>
+							<button class="button is-danger is-outlined" :disabled="deleting" @click="handleDelete">
+								{{ deleting ? '…' : (confirmDel ? 'ARE YOU SURE?' : 'DELETE') }}
+							</button>
 						</div>
 					</footer>
 
@@ -290,12 +290,23 @@ onUnmounted(() => {
 <style scoped>
 .modal-card { max-width: 520px; width: 100%; }
 
-.modal-sub
+/* Header */
+.modal-card-head
 {
-	font-size: 10px;
+	background: var(--surface-1, #1e1e1e);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow: none;
+	background-image: none;
+}
+
+.cancel-header-btn
+{
+	font-size: 13px;
 	font-weight: 600;
-	letter-spacing: 0.1em;
-	color: var(--text-muted);
+	letter-spacing: 0.08em;
+	margin-left: auto;
+	padding: 0.5em 1.2em;
+	height: auto;
 }
 
 /* Amount section */
@@ -321,7 +332,8 @@ onUnmounted(() => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 6px;
+	gap: 2px;
+	padding-left: 20px;
 }
 
 .amount-dollar
@@ -329,6 +341,7 @@ onUnmounted(() => {
 	font-size: 36px;
 	font-weight: 300;
 	color: var(--accent);
+	line-height: 1;
 }
 
 .amount-input
@@ -339,9 +352,10 @@ onUnmounted(() => {
 	font-size: 42px;
 	font-weight: 300;
 	color: var(--accent);
-	width: 200px;
-	text-align: left;
+	width: 160px;
+	text-align: center;
 	caret-color: var(--accent);
+	line-height: 1;
 }
 
 .amount-input::placeholder { color: rgba(74, 222, 128, 0.35); }
@@ -364,7 +378,7 @@ onUnmounted(() => {
 .type-btn--active
 {
 	background: var(--surface-2) !important;
-	color: var(--text) !important;
+	color: var(--accent) !important;
 	border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
@@ -390,16 +404,8 @@ onUnmounted(() => {
 .modal-card-foot { gap: 10px; flex-wrap: wrap; }
 
 .modal-card-foot .button.is-success { flex: 2; }
-.modal-card-foot .button:not(.is-success):not(.is-danger) { flex: 1; }
 
 .delete-zone { margin-left: auto; }
-
-.confirm-label
-{
-	font-size: 12px;
-	color: var(--text-muted);
-	white-space: nowrap;
-}
 
 /* Transition */
 .modal-fade-enter-active,

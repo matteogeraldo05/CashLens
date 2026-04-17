@@ -4,7 +4,6 @@
 */
 import { defineStore } from 'pinia';
 import { supabase } from './supabase';
-import router from '../router';
 
 export const useAccountStore = defineStore('account', {
 	state: () => ({
@@ -105,6 +104,7 @@ export const useAccountStore = defineStore('account', {
 			} else {
 				this.user = null;
 				this.profile = null;
+				const { default: router } = await import('../router');
 				router.push('/');
 			}
 

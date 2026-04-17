@@ -5,8 +5,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAccountStore } from './lib/stores';
 import LoginPage from './components/LoginPage.vue';
-import DashboardPage from './components/DashboardPage.vue';
-import AnalyticsPage from './components/analytics/AnalyticsPage.vue';
+import DashboardPage from './components/dashboard/DashboardPage.vue';
 
 const routes = [
   { path: '/', component: LoginPage },

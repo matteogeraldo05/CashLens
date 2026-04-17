@@ -159,7 +159,7 @@ function onDeleted() {
 				<div class="level-item">
 					<h1 class="tx-title">Subscriptions</h1>
 				</div>
-			</div>
+        </div>
 			
     
 		</div>
